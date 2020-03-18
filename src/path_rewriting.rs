@@ -299,9 +299,7 @@ pub fn rewrite_paths(
 
         // Get absolute path to the source file.
         let paths = get_abs_path(&source_dir, rel_path, &mut cache);
-        if paths.is_none() {
-            return None;
-        }
+        paths.as_ref()?;
 
         let (abs_path, rel_path) = paths.unwrap();
 
@@ -563,15 +561,7 @@ mod tests {
         let mut result_map: CovResultMap = FxHashMap::default();
         result_map.insert("main.cpp".to_string(), empty_result!());
         result_map.insert("mydir/prova.h".to_string(), empty_result!());
-        let results = rewrite_paths(
-            result_map,
-            None,
-            None,
-            None,
-            false,
-            &mut vec!["mydir/*"],
-            None,
-        );
+        let results = rewrite_paths(result_map, None, None, None, false, &mut ["mydir/*"], None);
         let mut count = 0;
         for (abs_path, rel_path, result) in results {
             count += 1;
@@ -671,6 +661,7 @@ mod tests {
 
     #[test]
     #[should_panic]
+    #[allow(unused_must_use)]
     fn test_rewrite_paths_rewrite_path_using_relative_source_directory() {
         let result_map: CovResultMap = FxHashMap::default();
         rewrite_paths(

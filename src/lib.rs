@@ -154,6 +154,7 @@ macro_rules! try_parse {
     };
 }
 
+#[allow(clippy::cognitive_complexity)]
 pub fn consumer(
     working_dir: &PathBuf,
     source_dir: &Option<PathBuf>,

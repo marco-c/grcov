@@ -97,8 +97,10 @@ macro_rules! read_u_le {
         let start = $buf.pos;
         $buf.pos += size;
         if $buf.pos <= $buf.buffer.len() {
+            #[allow(clippy::transmute_ptr_to_ptr)]
             Ok(unsafe {
                 *std::mem::transmute::<*const u8, *const $ty>($buf.buffer[start..].as_ptr())
+                // *$buf.buffer[start..].as_ptr() as $ty
             }
             .to_le())
         } else {
@@ -386,7 +388,7 @@ impl GCNO {
                 if len > 0 {
                     // Read the word that pads the beginning of the line table. This may be a
                     // flag of some sort, but seems to always be zero.
-                    let _dummy = reader.skip_u32()?;
+                    reader.skip_u32()?;
 
                     let file_name = reader.read_string()?;
                     let len = len - 2 - ((file_name.len() as u32 / 4) + 1);
@@ -414,7 +416,7 @@ impl GCNO {
                     }
                 }
                 // Just read 2 zeros
-                let _dummy = reader.skip_u64()?;
+                reader.skip_u64()?;
                 tag = reader.read_u32()?;
             } else {
                 return Err(GcovError::Str(format!(
@@ -429,7 +431,7 @@ impl GCNO {
     fn read_functions(&mut self, reader: &mut dyn GcovReader) -> Result<(), GcovError> {
         let mut tag = reader.read_u32()?;
         while tag == 0x0100_0000 {
-            let _dummy = reader.skip_u32()?;
+            reader.skip_u32()?;
             let identifier = reader.read_u32()?;
             let line_checksum = reader.read_u32()?;
             if self.version != 402 {
@@ -455,7 +457,7 @@ impl GCNO {
                 let count = reader.read_u32()? as usize;
                 let mut blocks: SmallVec<[GcovBlock; 16]> = SmallVec::with_capacity(count);
                 for no in 0..count {
-                    let _flags = reader.skip_u32()?;
+                    reader.skip_u32()?;
                     blocks.push(GcovBlock {
                         no,
                         source: SmallVec::new(),
@@ -549,7 +551,7 @@ impl GCNO {
             )));
         }
 
-        let _chk_sum = reader.skip_u32()?;
+        reader.skip_u32()?;
         if version != 402 {
             let cfg_sum = reader.read_u32()?;
             if cfg_sum != checksum {

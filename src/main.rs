@@ -22,6 +22,7 @@ use std::{process, thread};
 
 use grcov::*;
 
+#[allow(deprecated)]
 fn main() {
     let default_num_threads = 1.max(num_cpus::get() - 1).to_string();
 
@@ -250,7 +251,7 @@ fn main() {
             panic_info
                 .payload()
                 .downcast_ref::<&str>()
-                .map(|s| *s)
+                .cloned()
                 .unwrap_or("<cause unknown>")
         });
         error!("A panic occurred at {}:{}: {}", filename, line, cause);
@@ -341,7 +342,7 @@ fn main() {
         parsers.push(t);
     }
 
-    if let Err(_) = producer.join() {
+    if producer.join().is_err() {
         process::exit(1);
     }
 
@@ -351,7 +352,7 @@ fn main() {
     }
 
     for parser in parsers {
-        if let Err(_) = parser.join() {
+        if parser.join().is_err() {
             process::exit(1);
         }
     }
@@ -411,6 +412,6 @@ fn main() {
     } else if output_type == "html" {
         output_html(iterator, output_file_path, num_threads);
     } else {
-        assert!(false, "{} is not a supported output type", output_type);
+        panic!("{} is not a supported output type", output_type);
     }
 }
