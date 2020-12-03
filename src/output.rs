@@ -1,9 +1,10 @@
 use crossbeam::channel::unbounded;
+use hashbrown::hash_map;
+use hashbrown::HashMap;
 use md5::{Digest, Md5};
-use rustc_hash::FxHashMap;
 use serde_json::{self, json, Value};
 use std::cell::RefCell;
-use std::collections::{hash_map, BTreeSet};
+use std::collections::BTreeSet;
 use std::ffi::OsStr;
 use std::fs::File;
 use std::io::{self, BufWriter, Read, Write};
@@ -169,7 +170,7 @@ pub fn output_activedata_etl(results: CovResultIter, output_file: Option<&str>, 
 
 pub fn output_covdir(results: CovResultIter, output_file: Option<&str>) {
     let mut writer = BufWriter::new(get_target_output_writable(output_file));
-    let mut relative: FxHashMap<PathBuf, Rc<RefCell<CDDirStats>>> = FxHashMap::default();
+    let mut relative: HashMap<PathBuf, Rc<RefCell<CDDirStats>>> = HashMap::default();
     let global = Rc::new(RefCell::new(CDDirStats::new("".to_string())));
     relative.insert(PathBuf::from(""), global.clone());
 
@@ -601,7 +602,7 @@ mod tests {
                     map.insert(2, vec![false, false, false, true]);
                     map
                 },
-                functions: FxHashMap::default(),
+                functions: HashMap::default(),
             },
         )];
 
@@ -627,7 +628,7 @@ mod tests {
                 lines: BTreeMap::new(),
                 branches: BTreeMap::new(),
                 functions: {
-                    let mut map = FxHashMap::default();
+                    let mut map = HashMap::default();
                     map.insert(
                         "_RINvNtC3std3mem8align_ofNtNtC3std3mem12DiscriminantE".to_string(),
                         Function {
@@ -677,7 +678,7 @@ mod tests {
                 CovResult {
                     lines: [(1, 10), (2, 11)].iter().cloned().collect(),
                     branches: BTreeMap::new(),
-                    functions: FxHashMap::default(),
+                    functions: HashMap::default(),
                 },
             ),
             (
@@ -686,7 +687,7 @@ mod tests {
                 CovResult {
                     lines: [(1, 0), (2, 10), (4, 0)].iter().cloned().collect(),
                     branches: BTreeMap::new(),
-                    functions: FxHashMap::default(),
+                    functions: HashMap::default(),
                 },
             ),
             (
@@ -695,7 +696,7 @@ mod tests {
                 CovResult {
                     lines: [(1, 10), (4, 1)].iter().cloned().collect(),
                     branches: BTreeMap::new(),
-                    functions: FxHashMap::default(),
+                    functions: HashMap::default(),
                 },
             ),
             (
@@ -704,7 +705,7 @@ mod tests {
                 CovResult {
                     lines: [(1, 10), (2, 0)].iter().cloned().collect(),
                     branches: BTreeMap::new(),
-                    functions: FxHashMap::default(),
+                    functions: HashMap::default(),
                 },
             ),
         ];
@@ -731,7 +732,7 @@ mod tests {
             CovResult {
                 lines: [(1, 10), (2, 11)].iter().cloned().collect(),
                 branches: BTreeMap::new(),
-                functions: FxHashMap::default(),
+                functions: HashMap::default(),
             },
         )];
 
@@ -771,7 +772,7 @@ mod tests {
             CovResult {
                 lines: [(1, 10), (2, 11)].iter().cloned().collect(),
                 branches: BTreeMap::new(),
-                functions: FxHashMap::default(),
+                functions: HashMap::default(),
             },
         )];
 
@@ -811,7 +812,7 @@ mod tests {
             CovResult {
                 lines: [(1, 10), (2, 11)].iter().cloned().collect(),
                 branches: BTreeMap::new(),
-                functions: FxHashMap::default(),
+                functions: HashMap::default(),
             },
         )];
 
